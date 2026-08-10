@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DeployTrack</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <div>
+                <h1>🚀 DeployTrack</h1>
+                <p>Deployment Management Dashboard</p>
+            </div>
+
+            <div class="live-status">
+                <span></span>
+                LIVE
+            </div>
+        </header>
+
+
+        <section class="overview">
+
+            <div class="card">
+                <h3>APPLICATION</h3>
+                <p id="application">Loading...</p>
+            </div>
+
+            <div class="card">
+                <h3>ENVIRONMENT</h3>
+                <p id="environment">Loading...</p>
+            </div>
+
+            <div class="card">
+                <h3>VERSION</h3>
+                <p id="version">Loading...</p>
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <h2>System Status</h2>
+
+            <div class="status-grid">
+
+                <div class="status-card">
+                    <span id="application-dot" class="status-dot"></span>
+                    <div>
+                        <h3>Application</h3>
+                        <p id="application-status">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <span id="api-dot" class="status-dot"></span>
+                    <div>
+                        <h3>API</h3>
+                        <p id="api-status">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <span id="server-dot" class="status-dot"></span>
+                    <div>
+                        <h3>Server</h3>
+                        <p id="server-status">Loading...</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <h2>Latest Deployments</h2>
+
+            <div id="deployments">
+                Loading deployments...
+            </div>
+
+        </section>
+
+        <section class="deploy-section">
+        
+            <button id="deploy-button" onclick="triggerDeployment()">
+                🚀 Trigger Deployment
+            </button>
+        
+            <p id="deploy-message"></p>
+        
+        </section>
+
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
