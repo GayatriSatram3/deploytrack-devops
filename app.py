@@ -6,6 +6,12 @@ app = Flask(__name__)
 
 deployments_data = [
     {
+        "build": 4,
+        "version": "1.1.0",
+        "status": "SUCCESS",
+        "environment": "Testing"
+    },
+    {
         "build": 3,
         "version": "1.0.0",
         "status": "SUCCESS",
@@ -24,7 +30,6 @@ deployments_data = [
         "environment": "Testing"
     }
 ]
-
 
 @app.route("/")
 def home():
@@ -54,7 +59,7 @@ def info():
     return jsonify({
         "application": "DeployTrack",
         "environment": "Testing",
-        "version": "1.0.0"
+        "version": "1.1.0"
     })
 
 
