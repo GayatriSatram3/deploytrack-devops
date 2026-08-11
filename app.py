@@ -1,10 +1,13 @@
 from flask import Flask, render_template, jsonify, request
+import json
+import os
 
 app = Flask(__name__)
 
-# DeployTrack CI/CD webhook test
+DATA_DIR = "/app/data"
+DATA_FILE = os.path.join(DATA_DIR, "deployments.json")
 
-deployments_data = [
+DEFAULT_DEPLOYMENTS = [
     {
         "build": 4,
         "version": "1.1.0",
@@ -30,6 +33,29 @@ deployments_data = [
         "environment": "Testing"
     }
 ]
+
+
+def load_deployments():
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    if not os.path.exists(DATA_FILE):
+        save_deployments(DEFAULT_DEPLOYMENTS)
+        return DEFAULT_DEPLOYMENTS.copy()
+
+    try:
+        with open(DATA_FILE, "r") as file:
+            return json.load(file)
+    except (json.JSONDecodeError, OSError):
+        save_deployments(DEFAULT_DEPLOYMENTS)
+        return DEFAULT_DEPLOYMENTS.copy()
+
+
+def save_deployments(deployments):
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    with open(DATA_FILE, "w") as file:
+        json.dump(deployments, file, indent=2)
+
 
 @app.route("/")
 def home():
@@ -65,11 +91,14 @@ def info():
 
 @app.route("/api/deployments")
 def deployments():
+    deployments_data = load_deployments()
     return jsonify(deployments_data)
 
 
 @app.route("/api/deploy", methods=["POST"])
 def deploy():
+
+    deployments_data = load_deployments()
 
     new_build = deployments_data[0]["build"] + 1
 
@@ -84,6 +113,8 @@ def deploy():
 
     deployments_data.insert(0, new_deployment)
 
+    save_deployments(deployments_data)
+
     return jsonify({
         "status": "BUILDING",
         "message": "Deployment started",
@@ -91,18 +122,28 @@ def deploy():
         "version": new_version
     })
 
+
 @app.route("/api/deployments/<int:build>/status", methods=["PUT"])
 def update_deployment_status(build):
 
+    deployments_data = load_deployments()
+
     data = request.get_json()
 
-    new_status = data.get("status")
+    if not data or "status" not in data:
+        return jsonify({
+            "error": "Status is required"
+        }), 400
+
+    new_status = data["status"]
 
     for deployment in deployments_data:
 
         if deployment["build"] == build:
 
             deployment["status"] = new_status
+
+            save_deployments(deployments_data)
 
             return jsonify({
                 "message": "Deployment status updated",
@@ -112,7 +153,6 @@ def update_deployment_status(build):
     return jsonify({
         "error": "Deployment not found"
     }), 404
-
 
 
 if __name__ == "__main__":
